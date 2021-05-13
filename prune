@@ -13,7 +13,13 @@ function run_exit_commands {
 }
 
 main() {
+  set +e
   run_commands "${PRE_COMMANDS:-}"
+  set -e
+  if [ $? -ne 0 ]; then
+    run_commands "${POST_COMMANDS_FAILURE:-}"
+    exit
+  fi
 
   start=$(date +%s)
   echo Starting prune at "$(date +"%Y-%m-%d %H:%M:%S")"
