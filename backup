@@ -34,7 +34,16 @@ function check_bool {
 
 trap run_exit_commands EXIT
 
+set +e
 run_commands "${PRE_COMMANDS:-}"
+if [ $? -ne 0 ]
+then
+	set -e
+	run_commands "${POST_COMMANDS_FAILURE:-}"
+	exit
+else
+	set -e
+fi
 
 IFS=" " read -r -a RESTIC_BACKUP_SOURCES <<< "$(replace_spaces "${RESTIC_BACKUP_SOURCES:-/data}")"
 RESTIC_BACKUP_TAGS="${RESTIC_BACKUP_TAGS:-}"
